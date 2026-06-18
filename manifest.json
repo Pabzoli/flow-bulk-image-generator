@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Flow Bulk Image Generator",
+  "version": "1.0.0",
+  "description": "Automate bulk image generation on Google Flow with reference image support and random cooldowns",
+  "permissions": [
+    "storage",
+    "downloads",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://labs.google/fx/tools/flow/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Flow Bulk Image Generator"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://labs.google/fx/tools/flow/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow Bulk Image Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Google Sans', 'Roboto', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-width: 480px;
+      color: #1a1a1a;
+    }
+
+    .container {
+      padding: 20px;
+      background: white;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .logo {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      resize: vertical;
+      min-height: 100px;
+      background: #f9f9f9;
+      color: #333;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea::placeholder {
+      color: #999;
+    }
+
+    .file-input-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .file-input-label {
+      flex: 1;
+      padding: 10px 12px;
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f9f9f9;
+      font-size: 12px;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .file-input-label:hover {
+      background: #f0f0ff;
+      border-color: #764ba2;
+    }
+
+    .file-input-label.selected {
+      border-color: #4caf50;
+      background: #f1f8f4;
+      color: #2e7d32;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .image-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid #e0e0e0;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    select, input[type="number"] {
+      padding: 8px 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #f9f9f9;
+      color: #333;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+    }
+
+    .delay-group {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .delay-input {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #ccc;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle.active {
+      background: #667eea;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 10px;
+      transition: left 0.2s;
+    }
+
+    .toggle.active::after {
+      left: 22px;
+    }
+
+    .toggle-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .toggle-label-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .toggle-label-hint {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      flex: 2;
+    }
+
+    .btn-start:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-start:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-pause {
+      background: #fbbf24;
+      color: #78350f;
+    }
+
+    .btn-pause:hover:not(:disabled) {
+      background: #f59e0b;
+    }
+
+    .btn-stop {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-stop:hover:not(:disabled) {
+      background: #dc2626;
+    }
+
+    .status-box {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .status-box.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .status-box.success {
+      background: #dcfce7;
+      color: #166534;
+      border-left: 4px solid #22c55e;
+    }
+
+    .status-box.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 4px solid #ef4444;
+    }
+
+    .status-box.warning {
+      background: #fef3c7;
+      color: #b45309;
+      border-left: 4px solid #f59e0b;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .info-text {
+      font-size: 11px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .error-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 8px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .error-list li {
+      padding: 4px 0;
+      font-size: 11px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .error-list li:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">🖼️</div>
+      <h1>Flow Bulk Image Generator</h1>
+    </div>
+
+    <!-- Reference Image Section -->
+    <div class="section">
+      <div class="section-title">📸 Reference Image (Required)</div>
+      <div class="file-input-group">
+        <label for="referenceImage" class="file-input-label" id="fileLabel">Click to upload or drag image</label>
+        <input type="file" id="referenceImage" accept="image/*">
+        <img id="preview" class="image-preview" style="display: none;">
+      </div>
+      <div class="info-text">This reference image will be applied to all prompts</div>
+    </div>
+
+    <!-- Prompts Section -->
+    <div class="section">
+      <div class="section-title">📝 Bulk Prompts</div>
+      <label for="prompts">Paste prompts (one per line):</label>
+      <textarea id="prompts" placeholder="prompt 1&#10;prompt 2&#10;prompt 3"></textarea>
+      <div class="info-text" id="promptCount">0 prompts</div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="section">
+      <div class="section-title">⚙️ Generation Settings</div>
+      <div class="settings-grid">
+        <div class="setting-group">
+          <label for="model">Model:</label>
+          <select id="model">
+            <option value="nano_banana2">Nano Banana 2</option>
+            <option value="nano_banana_pro">Nano Banana Pro</option>
+            <option value="imagen4">Imagen 4</option>
+            <option value="veo3_fast">Veo 3.1 - Fast</option>
+            <option value="veo3_quality">Veo 3.1 - Quality</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label for="aspectRatio">Aspect Ratio:</label>
+          <select id="aspectRatio">
+            <option value="landscape">Landscape (16:9)</option>
+            <option value="square">Square (1:1)</option>
+            <option value="portrait">Portrait (9:16)</option>
+            <option value="widescreen">Widescreen (21:9)</option>
+            <option value="tallscreen">Tall (9:21)</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label for="imageCount">Images per Prompt:</label>
+          <select id="imageCount">
+            <option value="1">1 image</option>
+            <option value="2">2 images</option>
+            <option value="3">3 images</option>
+            <option value="4">4 images</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label for="downloadQuality">Download Quality:</label>
+          <select id="downloadQuality">
+            <option value="1K">1K — Original</option>
+            <option value="2K">2K — Upscaled</option>
+            <option value="4K">4K — Upscaled</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cooldown Settings -->
+    <div class="section">
+      <div class="section-title">⏱️ Cooldown Between Prompts</div>
+      <div class="delay-group">
+        <div class="delay-input">
+          <label for="minDelay">Min (seconds):</label>
+          <input type="number" id="minDelay" min="1" max="60" value="10">
+        </div>
+        <div class="delay-input">
+          <label for="maxDelay">Max (seconds):</label>
+          <input type="number" id="maxDelay" min="1" max="120" value="15">
+        </div>
+      </div>
+      <div class="info-text">Random delay between min-max for natural automation</div>
+    </div>
+
+    <!-- Behavior Toggles -->
+    <div class="section">
+      <div class="section-title">🖥️ Automation Behavior</div>
+      
+      <div class="toggle-group">
+        <div class="toggle active" id="toggleAutoDownload" data-setting="autoDownload"></div>
+        <div class="toggle-label">
+          <span class="toggle-label-text">Auto-Download</span>
+          <span class="toggle-label-hint">Automatically download images with sequence naming</span>
+        </div>
+      </div>
+
+      <div class="toggle-group">
+        <div class="toggle active" id="toggleStealthMode" data-setting="stealthMode"></div>
+        <div class="toggle-label">
+          <span class="toggle-label-text">Stealth Mode</span>
+          <span class="toggle-label-hint">Human-like typing & interaction patterns</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Control Buttons -->
+    <div class="button-group">
+      <button class="btn-start" id="startBtn">▶️ Start</button>
+      <button class="btn-pause" id="pauseBtn" style="display: none;">⏸ Pause</button>
+      <button class="btn-stop" id="stopBtn" style="display: none;">⏹ Stop</button>
+    </div>
+
+    <!-- Status Display -->
+    <div class="status-box" id="statusBox">
+      <div id="statusMessage"></div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <ul class="error-list" id="errorList" style="display: none;"></ul>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
